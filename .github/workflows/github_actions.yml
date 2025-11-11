@@ -1,0 +1,50 @@
+name: "Application Tests"
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main", "develop" ]
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+    environment: testing
+
+    strategy:
+      matrix:
+        php-version: [7.1,8.0]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
+
+      - name: Cache composer dependencies
+        uses: actions/cache@v2
+        with:
+          path: vendor
+          key: composer-${{ matrix.php-version }}-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            composer-
+
+      - name: Setup PHP ${{ matrix.php-version }}
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+          extensions: mbstring, pdo, pdo_mysql
+          coverage: none
+
+      - name: Install composer dependencies
+        run: |
+          composer install --dev --prefer-dist --no-progress --no-interaction
+
+      - name: Run PHP Code Sniffer
+        run: composer phpcs
+
+      - name: Run PHPStan
+        run: composer phpstan
+
+      - name: Run PHPUnit tests
+        run: composer tests
