@@ -5,8 +5,7 @@
     "type": "library",
     "license": "Apache",
     "require": {
-        "php": "^8.0",
-        "ext-curl": "*"
+        "php": "^8.0"
     },
     "require-dev": {
         "squizlabs/php_codesniffer": "^3.7",
