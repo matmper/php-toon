@@ -1,50 +1,44 @@
-name: "Application Tests"
+name: "Application Check"
 
 on:
-  push:
-    branches: [ "main" ]
   pull_request:
     branches: [ "main", "develop" ]
 
 jobs:
-  run-tests:
+  php-actions:
     runs-on: ubuntu-latest
-    environment: testing
 
-    strategy:
-      matrix:
-        php-version: [7.3,8.0]
+    defaults:
+      run:
+        working-directory: src
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 1
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 1
 
-      - name: Cache composer dependencies
-        uses: actions/cache@v4
-        with:
-          path: vendor
-          key: composer-${{ matrix.php-version }}-${{ hashFiles('**/composer.lock') }}
-          restore-keys: |
-            composer-
+    - name: Cache composer dependencies
+      uses: actions/cache@v4
+      with:
+        path: src/vendor
+        key: composer-${{ hashFiles('src/composer.lock') }}
+        restore-keys: |
+          composer-
 
-      - name: Setup PHP ${{ matrix.php-version }}
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: ${{ matrix.php-version }}
-          extensions: mbstring, pdo, pdo_mysql
-          coverage: none
+    - name: Install PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: "8.0"
+        tools: composer
 
-      - name: Install composer dependencies
-        run: |
-          composer install --dev --prefer-dist --no-progress --no-interaction
+    - name: Install Composer dependencies
+      run: composer install --no-interaction --prefer-dist --no-progress
 
-      - name: Run PHP Code Sniffer
-        run: composer phpcs
+    - name: Run PHP Unit Tests suite
+      run: composer tests
 
-      - name: Run PHPStan
-        run: composer phpstan
+    - name: Run PHP Stan suit
+      run: composer phpstan
 
-      - name: Run PHPUnit tests
-        run: composer tests
+    - name: Run PHP Code Sniffer suit
+      run: composer phpcs
