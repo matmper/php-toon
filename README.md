@@ -3,7 +3,7 @@
 Token-Oriented Object Notation (TOON) for PHP
 
 ## Requirements
-- PHP ^7.1 | ^8.0
+- PHP ^8.0
 
 ## Installation & Usage
 
