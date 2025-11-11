@@ -1,44 +1,44 @@
-name: "Application Check"
+name: "Tests Actions"
 
 on:
+  push:
+    branches: [ "main" ]
   pull_request:
     branches: [ "main", "develop" ]
 
 jobs:
-  php-actions:
+  run-tests:
     runs-on: ubuntu-latest
 
-    defaults:
-      run:
-        working-directory: src
+    environment: testing
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v2
       with:
         fetch-depth: 1
 
     - name: Cache composer dependencies
       uses: actions/cache@v4
       with:
-        path: src/vendor
-        key: composer-${{ hashFiles('src/composer.lock') }}
+        path: vendor
+        key: composer-${{ hashFiles('**/composer.lock') }}
         restore-keys: |
           composer-
 
     - name: Install PHP
       uses: shivammathur/setup-php@v2
       with:
-        php-version: "8.0"
-        tools: composer
+        php-version: 8.0
 
-    - name: Install Composer dependencies
-      run: composer install --no-interaction --prefer-dist --no-progress
+    - name: Install composer dependencies
+      run: |
+        composer install --dev --prefer-dist --no-progress --no-interaction
 
-    - name: Run PHP Unit Tests suite
-      run: composer tests
+    - name: Run PHP Code Sniffer suit
+      run: composer phpcs
 
     - name: Run PHP Stan suit
       run: composer phpstan
 
-    - name: Run PHP Code Sniffer suit
-      run: composer phpcs
+    - name: Run PHP Unit Tests suite
+      run: composer tests
