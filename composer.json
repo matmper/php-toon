@@ -3,7 +3,7 @@
     "description": "Toon PHP Manager (Token-Oriented Object Notation)",
     "version": "1.0.0",
     "type": "library",
-    "license": "Apache",
+    "license": "Apache-2.0",
     "require": {
         "php": "^8.0"
     },
